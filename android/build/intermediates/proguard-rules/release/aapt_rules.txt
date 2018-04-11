@@ -1,0 +1,15 @@
+# view AndroidManifest.xml #generated:38
+-keep class com.facebook.FacebookActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:48
+-keep class com.facebook.FacebookContentProvider { <init>(...); }
+
+# view AndroidManifest.xml #generated:34
+-keep class com.google.android.gms.ads.AdActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:57
+-keep class com.google.android.gms.ads.purchase.InAppPurchaseActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:23
+-keep class com.ratowski.voicegame.android.AndroidLauncher { <init>(...); }
+

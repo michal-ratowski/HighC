@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\Michał\Downloads\High C acc\High C 0403_end\core\build\libs\core-1.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="031d431cd141cbf158a14292f200dd357fce19c7">
+        <dex dex="C:\Users\Michał\Downloads\High C acc\High C 0403_end\android\build\intermediates\pre-dexed\debug\core-1.0-7e69ae237043b4bfdca68091ea8ead0e3ce12853.jar" />
+    </item>
+
+</items>
