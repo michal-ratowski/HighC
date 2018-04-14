@@ -13,11 +13,11 @@ public class Wall extends Scrollable {
     public int wallPitch, meanWallPitch;
     public float wallHealth, wallMaxHealth;
     public int noteNumber;
-    public boolean wallActive = false;
+    public boolean isActive = false;
     public boolean scoreUpdated = false;
     public boolean isContinuous;
     public int currentSinger;
-    public boolean wallVisible;
+    public boolean isVisible;
     public int wallNumber;
     public int missionSineVariant;
     public int currentMissionNumber;
@@ -59,8 +59,8 @@ public class Wall extends Scrollable {
         wallPitch = setWallPitchFromNoteNumber();
         meanWallPitch = wallPitch;
 
-        wallActive = false;
-        wallVisible = false;
+        isActive = false;
+        isVisible = false;
 
         this.wallX = x;
         this.widthBar = width;
@@ -87,7 +87,7 @@ public class Wall extends Scrollable {
 
     @Override
     public void reset(float newX, float scrollSpeed) {
-        wallActive = false;
+        isActive = false;
         scoreUpdated = false;
         noteNumber = setRandomNoteNumber();
         wallPitch = setWallPitchFromNoteNumber();
@@ -173,13 +173,13 @@ public class Wall extends Scrollable {
 
     private void updateWallVisibility(){
         if (position.x < WALL_VISIBILITY_THRESHOLD) {
-            wallVisible = true;
+            isVisible = true;
         }
     }
 
     private void updateWallActiveness(){
         if (position.x < WALL_ACTIVE_THRESHOLD && wallHealth > 0){
-            wallActive = true;
+            isActive = true;
         }
     }
 }

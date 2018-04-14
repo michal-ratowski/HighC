@@ -19,7 +19,6 @@ public class InputHandler implements InputProcessor {
     private SimpleButton gameOverBackButton, tryAgainButton, nextChallengeButton;
     private SimpleButton exitMenuButton, unpauseButton;
     private BistableButton singer1, singer2, singer3, singer4, singer5;
-
     private BistableButton[] singerButtons = new BistableButton[5];
 
     private BistableButton[][] settingsButtons = new BistableButton[3][2];
@@ -552,7 +551,7 @@ public class InputHandler implements InputProcessor {
         screenY = (int) gameHeight - screenY;
 
         if (debug == 1 && screenY > (gameHeight * 5 / 6)) {
-            if (gameWorld.stateIsRunning() && gameWorld.activeWall.wallActive && !gameWorld.gamePaused) {
+            if (gameWorld.stateIsRunning() && gameWorld.activeWall.isActive && !gameWorld.gamePaused) {
                 gameWorld.currentlyCrushing = true;
                 gameWorld.activeWall.addHealth(-3);
                 if (gameWorld.missionMode) gameWorld.addScore(5);
@@ -560,7 +559,7 @@ public class InputHandler implements InputProcessor {
         }
 
         if (screenY > (gameHeight * 5 / 6)) {
-            if (gameWorld.stateIsRunning() && gameWorld.activeWall.wallActive && !gameWorld.gamePaused && gameWorld.missionMode && gameWorld.currentMissionNumber == AssetManager.MISSION_TRY_YET_ANOTHER_WAY) {
+            if (gameWorld.stateIsRunning() && gameWorld.activeWall.isActive && !gameWorld.gamePaused && gameWorld.missionMode && gameWorld.currentMissionNumber == AssetManager.MISSION_TRY_YET_ANOTHER_WAY) {
                 gameWorld.currentlyCrushing = true;
                 gameWorld.activeWall.addHealth(-3);
                 gameWorld.addScore(10);
@@ -573,7 +572,7 @@ public class InputHandler implements InputProcessor {
 
         if (gameWorld.stateIsRunning() && !gameWorld.gamePaused && gameWorld.missionMode && gameWorld.currentMissionNumber == AssetManager.MISSION_THE_VOICE_IS_NOT_ENOUGH) {
             if (gameWorld.activeWall.getWallRectangle().contains(screenX, screenY)) {
-                if (gameWorld.currentPitch > gameWorld.minCorrectPitch && gameWorld.currentPitch < gameWorld.maxCorrectPitch && gameWorld.activeWall.wallActive) {
+                if (gameWorld.currentPitch > gameWorld.minCorrectPitch && gameWorld.currentPitch < gameWorld.maxCorrectPitch && gameWorld.activeWall.isActive) {
                     gameWorld.activeWall.addHealth(-2);
                     gameWorld.currentlyCrushing = true;
                     if (gameWorld.glassSoundCounter > 5) {

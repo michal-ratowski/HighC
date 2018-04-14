@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/High C 0403_end.iml" filepath="$PROJECT_DIR$/High C 0403_end.iml" />
-      <module fileurl="file://$PROJECT_DIR$/High C 0403_end.iml" filepath="$PROJECT_DIR$/High C 0403_end.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HighC.iml" filepath="$PROJECT_DIR$/HighC.iml" />
       <module fileurl="file://$PROJECT_DIR$/android/android.iml" filepath="$PROJECT_DIR$/android/android.iml" />
       <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/desktop/desktop.iml" filepath="$PROJECT_DIR$/desktop/desktop.iml" />

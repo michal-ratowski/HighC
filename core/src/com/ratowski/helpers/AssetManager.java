@@ -91,9 +91,6 @@ public class AssetManager {
     public static int[] notOneWallAtATimeMissionNumbers = new int[24];
     public static int missionsWithPredefinedWalls[] = {4, 7, 8, 10, 12, 16, 17, 20, 24, 28, 31, 32, 36, 40, 42, 44, 48, 52, 53, 56, 60, 64};
 
-
-
-
     // Camera changes missions' numbers
     public static final int MISSION_LIGHT_TURBULENCE = 3;
     public static final int MISSION_FASTEN_YOUR_SEATBELTS = 21;
@@ -169,6 +166,8 @@ public class AssetManager {
     public static boolean vibrationEnabled = true;
     public static boolean soundEnabled = false;
     public static boolean aliensEnabled = false;
+
+    // Button enums
 
     public static void loadAssets(InternetInterface internetInterface, SensorInterface sensorInterface, AdInterface adInterface) {
 

@@ -24,7 +24,6 @@ public class ScrollHandler {
     public int currentWallScore = 0;
     public boolean isStopped = false;
 
-
     public ScrollHandler(GameWorld gameWorld, float gameHeight) {
         this.gameWorld = gameWorld;
         this.gameHeight = gameHeight;
@@ -290,7 +289,7 @@ public class ScrollHandler {
     private void removeUnnecessaryInvisibleWalls() {
         for (Iterator<Wall> iter = walls.listIterator(); iter.hasNext(); ) {
             Wall wall = iter.next();
-            if (!wall.wallVisible) {
+            if (!wall.isVisible) {
                 iter.remove();
             }
         }

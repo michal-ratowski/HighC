@@ -80,7 +80,7 @@ public class GameWorld {
         this.midPointY = midPointY;
         activeWall = scrollHandler.getActiveWall();
         createAlienRows();
-        shuffleAliens();
+        randomizeAliens();
         previousWiFiState = AssetManager.adInterface.isWifiConnected();
     }
 
@@ -124,7 +124,7 @@ public class GameWorld {
                     || currentMissionNumber == 26 || currentMissionNumber == 33 || currentMissionNumber == 35 || currentMissionNumber == 37 || currentMissionNumber == 41
                     || currentMissionNumber == 43 || currentMissionNumber == 50 || currentMissionNumber == 51 || currentMissionNumber == 58 || currentMissionNumber == 62))) {
 
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.wallActive) {
+                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive) {
                     activeWall.addHealth(-2);
                     currentlyCrushing = true;
                     playCrushingSound();
@@ -136,7 +136,7 @@ public class GameWorld {
             noteString = getClosestNoteString();
 
             if (missionMode && currentMissionNumber == AssetManager.MISSION_SOMEONE_HAS_TO_LOOK) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.wallActive && AssetManager.aliensEnabled) {
+                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && AssetManager.aliensEnabled) {
                     activeWall.addHealth(-2);
                     currentlyCrushing = true;
                     if (glassSoundCounter > 3) {
@@ -144,8 +144,12 @@ public class GameWorld {
                         if (AssetManager.soundEnabled) AssetManager.glassMusic.play();
                     }
                 } else currentlyCrushing = false;
-            } else if (missionMode && currentMissionNumber == AssetManager.MISSION_SILENCE_IS_GOLDEN) {
-                if (currentVolume < -80 && activeWall.wallActive) {
+            }
+
+
+
+            else if (missionMode && currentMissionNumber == AssetManager.MISSION_SILENCE_IS_GOLDEN) {
+                if (currentVolume < -80 && activeWall.isActive) {
                     activeWall.addHealth(-2);
                     addScore(10);
                     currentlyCrushing = true;
@@ -155,7 +159,7 @@ public class GameWorld {
                     }
                 } else currentlyCrushing = false;
             } else if (missionMode && currentMissionNumber == AssetManager.MISSION_SHAKE_IT_BABY) {
-                if (accelerometerDeltaZ > 1500 && activeWall.wallActive) {
+                if (accelerometerDeltaZ > 1500 && activeWall.isActive) {
                     activeWall.addHealth(-2);
                     addScore(10);
                     currentlyCrushing = true;
@@ -165,7 +169,7 @@ public class GameWorld {
                     }
                 } else currentlyCrushing = false;
             } else if (missionMode && currentMissionNumber == AssetManager.MISSION_GOOD_ACOUSTICS) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.wallActive) {
+                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive) {
                     activeWall.addHealth(-10);
                     addScore(50);
                     currentlyCrushing = true;
@@ -175,7 +179,7 @@ public class GameWorld {
                     }
                 } else currentlyCrushing = false;
             } else if (missionMode && currentMissionNumber == AssetManager.MISSION_HEAR_ME_ROAR) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.wallActive && currentVolume > -50) {
+                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && currentVolume > -50) {
                     activeWall.addHealth(-2);
                     currentlyCrushing = true;
                     if (glassSoundCounter > 3) {
@@ -184,7 +188,7 @@ public class GameWorld {
                     }
                 } else currentlyCrushing = false;
             } else if (missionMode && currentMissionNumber == AssetManager.MISSION_HEAR_THEM_CRUSH) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.wallActive && AssetManager.soundEnabled) {
+                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && AssetManager.soundEnabled) {
                     activeWall.addHealth(-2);
                     currentlyCrushing = true;
                     if (glassSoundCounter > 3) {
@@ -193,7 +197,7 @@ public class GameWorld {
                     }
                 } else currentlyCrushing = false;
             } else if (missionMode && currentMissionNumber == AssetManager.MISSION_HUMMING_GENTLY) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.wallActive && currentVolume < -60) {
+                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && currentVolume < -60) {
                     activeWall.addHealth(-2);
                     currentlyCrushing = true;
                     if (glassSoundCounter > 3) {
@@ -202,7 +206,7 @@ public class GameWorld {
                     }
                 } else currentlyCrushing = false;
             } else if (missionMode && currentMissionNumber == AssetManager.MISSION_RENDEZVOUZ_AT_MIDNIGHT) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.wallActive && getCurrentHour() == 0) {
+                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && getCurrentHour() == 0) {
                     activeWall.addHealth(-2);
                     currentlyCrushing = true;
                     if (glassSoundCounter > 3) {
@@ -211,7 +215,7 @@ public class GameWorld {
                     }
                 } else currentlyCrushing = false;
             } else if (missionMode && currentMissionNumber == AssetManager.MISSION_SHAKE_IT_REAL_GOOD) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.wallActive && accelerometerDeltaZ > 1000) {
+                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && accelerometerDeltaZ > 1000) {
                     activeWall.addHealth(-2);
                     currentlyCrushing = true;
                     if (glassSoundCounter > 3) {
@@ -220,7 +224,7 @@ public class GameWorld {
                     }
                 } else currentlyCrushing = false;
             } else if (missionMode && currentMissionNumber == AssetManager.MISSION_THIRD_TIMES_A_CHARM) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.wallActive && AssetManager.mission43Failures >= 2) {
+                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && AssetManager.mission43Failures >= 2) {
                     activeWall.addHealth(-2);
                     currentlyCrushing = true;
                     if (glassSoundCounter > 3) {
@@ -229,7 +233,7 @@ public class GameWorld {
                     }
                 } else currentlyCrushing = false;
             } else if (missionMode && currentMissionNumber == AssetManager.MISSION_HEAR_ME_ROARER) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.wallActive && currentVolume > -50) {
+                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && currentVolume > -50) {
                     activeWall.addHealth(-2);
                     currentlyCrushing = true;
                     if (glassSoundCounter > 3) {
@@ -239,7 +243,7 @@ public class GameWorld {
                 } else currentlyCrushing = false;
 
             } else if (missionMode && currentMissionNumber == AssetManager.MISSION_TWIST_AND_SHOUT) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.wallActive && accelerometerDeltaZ > 1000 && currentVolume > -50) {
+                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && accelerometerDeltaZ > 1000 && currentVolume > -50) {
                     activeWall.addHealth(-2);
                     currentlyCrushing = true;
                     if (glassSoundCounter > 3) {
@@ -333,7 +337,7 @@ public class GameWorld {
 
         for(int i=0;i<3;i++){
             for (Alien alien : alienRows[i]) {
-                alien.setAlienState(Alien.AlienState.SUCCESS);
+                alien.setState(Alien.State.SUCCESS);
             }
         }
 
@@ -353,7 +357,7 @@ public class GameWorld {
 
         resetStars();
 
-        shuffleAliens();
+        randomizeAliens();
         restartWorld();
         currentGameState = GameState.READY_TO_PLAY;
         currentPitch = 0;
@@ -495,7 +499,7 @@ public class GameWorld {
         }
     }
 
-    public void shuffleAliens() {
+    public void randomizeAliens() {
         Random random = new Random();
         for (int i = 0; i < 3; i++) {
             alienRows[i].clear();
@@ -518,7 +522,7 @@ public class GameWorld {
                 Random random = new Random();
                 alienRows[i].get(j).coolTimeThreshold = random.nextInt(40) + 80;
                 alienRows[i].get(j).waitTimeThreshold = random.nextInt(10) + 1;
-                alienRows[i].get(j).setAlienState(Alien.AlienState.BEFORE_COOL);
+                alienRows[i].get(j).setState(Alien.State.BEFORE_COOL);
             }
         }
     }
@@ -528,7 +532,7 @@ public class GameWorld {
             for (int j = 0; j < alienRows[i].size(); j++) {
                 Random random = new Random();
                 alienRows[i].get(j).waitTimeThreshold = random.nextInt(10) + 1;
-                alienRows[i].get(j).setAlienState(Alien.AlienState.BEFORE_MEH);
+                alienRows[i].get(j).setState(Alien.State.BEFORE_MEH);
             }
         }
     }

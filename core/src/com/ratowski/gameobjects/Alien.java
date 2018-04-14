@@ -12,9 +12,9 @@ public class Alien {
     public int coolTimeThreshold = 100;
     public int waitTimeThreshold = 10;
 
-    public enum AlienState {NEUTRAL, COOL, BEFORE_COOL, MEH, BEFORE_MEH, READY, SUCCESS}
+    public enum State {NEUTRAL, COOL, BEFORE_COOL, MEH, BEFORE_MEH, READY, SUCCESS}
 
-    AlienState alienState;
+    State state;
 
     public Alien(float x, float y, int width, int height, GameWorld gameWorld) {
         this.x = x;
@@ -22,7 +22,7 @@ public class Alien {
         this.width = width;
         this.height = height;
         this.gameWorld = gameWorld;
-        this.alienState = AlienState.READY;
+        this.state = State.READY;
     }
 
 
@@ -32,16 +32,16 @@ public class Alien {
             gameWorld.deactivateAliens();
         }
         else if (gameWorld.stateIsReadyToPlay()) {
-            alienState = AlienState.READY;
+            state = State.READY;
         }
 
-        switch (alienState) {
+        switch (state) {
             case COOL:
                 if (cool < coolTimeThreshold) {
                     cool++;
                 } else {
                     cool = 0;
-                    alienState = AlienState.NEUTRAL;
+                    state = State.NEUTRAL;
                 }
                 break;
             case BEFORE_COOL:
@@ -49,7 +49,7 @@ public class Alien {
                     wait++;
                 } else {
                     wait = 0;
-                    alienState = AlienState.COOL;
+                    state = State.COOL;
                 }
                 break;
             case BEFORE_MEH:
@@ -58,7 +58,7 @@ public class Alien {
                 }
                 else {
                     wait = 0;
-                    alienState = AlienState.MEH;
+                    state = State.MEH;
                 }
                 break;
             default:
@@ -69,7 +69,7 @@ public class Alien {
     }
 
     public void reset() {
-        alienState = AlienState.NEUTRAL;
+        state = State.NEUTRAL;
     }
 
     // Getters and setters
@@ -105,11 +105,11 @@ public class Alien {
         this.height = height;
     }
 
-    public AlienState getAlienState() {
-        return alienState;
+    public State getState() {
+        return state;
     }
 
-    public void setAlienState(AlienState alienState) {
-        this.alienState = alienState;
+    public void setState(State state) {
+        this.state = state;
     }
 }
