@@ -36,7 +36,7 @@ public class AssetManager {
     public static Texture gameLogoTexture, splashScreenLogoTexture;
     public static Texture lucianoTexture, joseTexture, mariaTexture, joanTexture, secretPlayerTexture, alienTexture;
 
-    // Texture Regions
+    // Texture regions
     public static TextureRegion[][] menuButtonsTextureRegions = new TextureRegion[2][2];
     public static TextureRegion[][] otherButtonsTextureRegions = new TextureRegion[21][2];
     public static TextureRegion[][] numberButtonsTextureRegions = new TextureRegion[64][2];
@@ -52,7 +52,7 @@ public class AssetManager {
     public static TextureRegion gameOverScoreboardTextureRegion, successScoreboardTextureRegion;
     public static TextureRegion starTextureRegion, noStarTextureRegion;
 
-    // Game World Variables
+    // Game world variables
     public static int freePlayStarThresholdScoresArray[] = new int[]{5, 10, 15, 20, 25};
     public static double[] noteFrequencies = new double[43];
     public static String[] noteNames = new String[43];
@@ -89,7 +89,9 @@ public class AssetManager {
     public static int[] missionMaxScores = new int[65];
     public static String missionNames[] = new String[65];
     public static int[] notOneWallAtATimeMissionNumbers = new int[24];
+    public static int[] specificConditionsMissionNumbers = new int[16];
     public static int missionsWithPredefinedWalls[] = {4, 7, 8, 10, 12, 16, 17, 20, 24, 28, 31, 32, 36, 40, 42, 44, 48, 52, 53, 56, 60, 64};
+    public static int missionsWithContinuousWalls[] = {4, 8, 10, 12, 16, 17, 20, 24, 27, 28, 31, 32, 36, 39, 40, 42, 44, 48, 52, 53, 56, 60, 61, 64};
 
     // Camera changes missions' numbers
     public static final int MISSION_LIGHT_TURBULENCE = 3;
@@ -121,6 +123,7 @@ public class AssetManager {
     public static final int MISSION_TWIST_AND_SHOUT = 62;
 
     // Touch screen mission names'
+    public static final int MISSION_TRY_ANOTHER_WAY = 5;
     public static final int MISSION_THE_VOICE_IS_NOT_ENOUGH = 58;
     public static final int MISSION_TRY_YET_ANOTHER_WAY = 23;
 
@@ -138,7 +141,7 @@ public class AssetManager {
     public static final int MISSION_RENDEZVOUZ_AT_MIDNIGHT = 37;
     public static final int MISSION_THIRD_TIMES_A_CHARM = 43;
 
-    // Specific walls
+    // Specific walls' parameters
     public static final int MISSION_13_FAST_WALL_NUMBER = 10;
     public static final int MISSION_13_FAST_WALL_VELOCITY = -150;
 
@@ -149,7 +152,7 @@ public class AssetManager {
 
     // Particle Effects
     public static ParticleEffect effect, effect2, effect3, effect4;
-    public static ParticleEffectPool crushingParticleEffectPool, crushingParticleEffectPool2;
+    public static ParticleEffectPool[] crushingParticleEffectPools = new ParticleEffectPool[2];
     public static ParticleEffectPool correctPitchParticleEffectPool, starParticleEffectPool;
     public static Array<ParticleEffectPool.PooledEffect> glassParticleEffects = new Array();
     public static Array<ParticleEffectPool.PooledEffect> correctPitchParticleEffects = new Array();
@@ -359,7 +362,9 @@ public class AssetManager {
             userPreferences.flush();
         }
 
-        if (missionsCompleted == 64) secretPlayerUnlocked = true;
+        if (missionsCompleted == 64) {
+            secretPlayerUnlocked = true;
+        }
     }
 
     public static void setSelectedSinger(int val) {
@@ -601,15 +606,8 @@ public class AssetManager {
     }
 
     public static void loadMissionSettings() throws IOException {
-        BufferedReader reader = loadTextFile("data/continuousMissionNumbers.txt");
-        String line = reader.readLine();
-        String[] missionNumberStrings = line.split(",");
-
-        for (int i = 0; i < missionNumberStrings.length; i++) {
-            notOneWallAtATimeMissionNumbers[i] = Integer.parseInt(missionNumberStrings[i]);
-        }
-        reader.close();
-
+        loadMissionNumbers("data/continuousMissionNumbers.txt", notOneWallAtATimeMissionNumbers);
+        loadMissionNumbers("data/missionsSpecificConditions.txt", specificConditionsMissionNumbers);
 
         missionTempos = new int[]{0, -20, -20, -20, -30, -30, -30, -30, -40, -40, -40, -40, -40, -20, -40, -20, -40, -30, -5, -40, -40, -40, -50, -70, -50, -50, -40, -20, -40, -40, -30, -40, -40, -60, -50, -30, -50, -70, -50, -30, -50, -40, -80, -70, -40, -50, -90, -90, -40, -40, -70, -60, -50, -90, -70, -90, -50, -30, -50, -50, -50, -60, -70, -100, -20};
         missionMaxScores = new int[]{0, 750, 1600, 2000, 0, 700, 2500, 1500, 0, 1250, 10000, 2500, 0, 2500, 1500, 250, 0, 0, 2500, 2000, 0, 2500, 4000, 2000, 0, 4500, 2500, 0, 0, 3000, 3000, 20000, 0, 3500, 2500, 1600, 0, 3000, 2500, 0, 0, 2000, 0, 3000, 0, 3000, 1500, 1500, 0, 3750, 2500, 2000, 0, 0, 2500, 4500, 0, 2000, 3000, 4500, 0, 0, 2500, 4500, 0};
@@ -618,21 +616,28 @@ public class AssetManager {
 
         for (int i = 1; i < 17; i++) {
             int currentMissionMaxScore = 0;
-
             for (int j = 0; j < missionNotesPitchArray[4 * i].length; j++) {
                 currentMissionMaxScore += missionNotesHealthArray[4 * i][j] * 5;
             }
-
             missionMaxScores[4 * i] = currentMissionMaxScore;
         }
 
         int strangeMissions[] = new int[]{17, 27, 39, 42, 53, 61};
-
         for (int i = 0; i < strangeMissions.length; i++) {
             for (int j = 0; j < missionNotesPitchArray[strangeMissions[i]].length; j++) {
                 missionMaxScores[strangeMissions[i]] += missionNotesHealthArray[strangeMissions[i]][j] * 5;
             }
         }
+    }
+
+    private static void loadMissionNumbers(String filePath, int[] missionNumbers) throws IOException{
+        BufferedReader reader = loadTextFile(filePath);
+        String line = reader.readLine();
+        String[] missionNumbersStrings = line.split(",");
+        for (int i = 0; i < missionNumbersStrings.length; i++) {
+            missionNumbers[i] = Integer.parseInt(missionNumbersStrings[i]);
+        }
+        reader.close();
     }
 
     public static void loadMissionScores() {
@@ -844,15 +849,15 @@ public class AssetManager {
     private static void createParticleEffects() {
         effect = new ParticleEffect();
         effect.load(Gdx.files.internal("data/effects/shatter2.p"), Gdx.files.internal("data/effects/"));
-        crushingParticleEffectPool = new ParticleEffectPool(effect, 1, 1);
+        crushingParticleEffectPools[0] = new ParticleEffectPool(effect, 1, 1);
+
+        effect3 = new ParticleEffect();
+        effect3.load(Gdx.files.internal("data/effects/shatter3.p"), Gdx.files.internal("data/effects/"));
+        crushingParticleEffectPools[1] = new ParticleEffectPool(effect3, 1, 1);
 
         effect2 = new ParticleEffect();
         effect2.load(Gdx.files.internal("data/effects/good.p"), Gdx.files.internal("data/effects/"));
         correctPitchParticleEffectPool = new ParticleEffectPool(effect2, 1, 1);
-
-        effect3 = new ParticleEffect();
-        effect3.load(Gdx.files.internal("data/effects/shatter3.p"), Gdx.files.internal("data/effects/"));
-        crushingParticleEffectPool2 = new ParticleEffectPool(effect3, 1, 1);
 
         effect4 = new ParticleEffect();
         effect4.load(Gdx.files.internal("data/effects/starEffect.p"), Gdx.files.internal("data/effects/"));

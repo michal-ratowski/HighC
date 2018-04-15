@@ -25,51 +25,53 @@ import aurelienribon.tweenengine.TweenManager;
 
 public class GameWorld {
 
-    public enum GameState {MENU, MISSIONS, STATS, HELP, READY_TO_PLAY, RUNNING, GAMEOVER, HIGHSCORE, OPTIONS, SUCCESS}
+    // Game states
+    public enum GameState {
+        MENU, MISSIONS, STATS, HELP, READY_TO_PLAY, RUNNING, GAMEOVER, HIGHSCORE, OPTIONS, SUCCESS
+    }
     public GameState currentGameState;
 
-    float[] accelerometerValues;
-
+    // Game objects
     public Player player;
     public ArrayList<Alien>[] alienRows;
     public ArrayList<Monit> monits = new ArrayList<Monit>();
     private ScrollHandler scrollHandler;
     public Wall activeWall;
-    public int currentVolume;
-    boolean previousWiFiState;
-    boolean blackoutTaskStarted = false;
 
+    // Game variables
+    float[] accelerometerValues;
+    public float accelerometerDeltaZ = 0;
+    private float runTime = 0;
+    boolean previousWiFiState;
     public int score = 0;
     public int crushedWallsCounter = 0;
-    private float runTime = 0;
-    private float gameHeight;
-    public float voiceEffectLevel = 0;
-    public int currentPitch = 0;
-    public String noteString = "-";
     public int currentSingerNumber;
     public int currentMissionNumber = 1;
-    public int midPointY;
-    public double minCorrectPitch, maxCorrectPitch;
-    public float accelerometerDeltaZ = 0;
-
-    public int currentHelpPage = 1;
-    public int currentMissionPage = 1;
-    public int glassSoundCounter = 0;
-
-    public TweenManager blackoutTweenManager;
-    public Value blackAlphaValue = new Value();
-
     public boolean missionMode = false;
     public boolean continuousWalls = false;
     public boolean gamePaused = false;
     public boolean currentlyCrushing = false;
+    public int currentHelpPage = 1;
+    public int currentMissionPage = 1;
+    public int glassSoundCounter = 0;
+
+    // Voice variables
+    public int currentVoiceVolume;
+    public float voiceEffectLevel = 0;
+    public int currentPitch = 0;
+    public String noteString = "-";
+    public double minCorrectPitch, maxCorrectPitch;
+
+    // Drawing variables
+    public TweenManager blackoutTweenManager;
+    public Value blackAlphaValue = new Value();
+    public int midPointY;
+    private float gameHeight;
+    boolean blackoutTaskStarted = false;
     public boolean startTransition = false;
     public boolean starsAlreadyDrawnArray[] = new boolean[5];
     public boolean starsScheduledToDrawArray[] = new boolean[5];
     public boolean allStarsDrawn = false;
-
-
-    public int continuousWallsMissions[] = {4, 8, 10, 12, 16, 17, 20, 24, 27, 28, 31, 32, 36, 39, 40, 42, 44, 48, 52, 53, 56, 60, 61, 64};
 
     public GameWorld(int midPointY, float gameHeight) {
         currentGameState = GameState.MENU;
@@ -107,185 +109,74 @@ public class GameWorld {
 
     public void updateRunningState(float delta) {
         delta = stabilizeFramerate(delta);
-        increaseFreePlayWallSpeed();
-        setLastWallForMission13();
+        updateFreePlayWallSpeed();
+        updateLastWallForMission13();
         player.update();
         scrollHandler.updateNotMenuState(delta, runTime);
         activeWall = scrollHandler.getActiveWall();
 
-        // currentPitch
-
+        // Pitch detection & check for crushing
         if (!gamePaused) {
             currentPitch = SoundHandler.getDominantFrequency();
-            setCorrectPitchBoundaries();
-
-
-            if (!(missionMode && (currentMissionNumber == 2 || currentMissionNumber == 5 || currentMissionNumber == 9 || currentMissionNumber == 14 || currentMissionNumber == 22 || currentMissionNumber == 23
-                    || currentMissionNumber == 26 || currentMissionNumber == 33 || currentMissionNumber == 35 || currentMissionNumber == 37 || currentMissionNumber == 41
-                    || currentMissionNumber == 43 || currentMissionNumber == 50 || currentMissionNumber == 51 || currentMissionNumber == 58 || currentMissionNumber == 62))) {
-
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive) {
-                    activeWall.addHealth(-2);
-                    currentlyCrushing = true;
-                    playCrushingSound();
-                } else {
-                    currentlyCrushing = false;
-                }
-            }
-
             noteString = getClosestNoteString();
-
-            if (missionMode && currentMissionNumber == AssetManager.MISSION_SOMEONE_HAS_TO_LOOK) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && AssetManager.aliensEnabled) {
-                    activeWall.addHealth(-2);
-                    currentlyCrushing = true;
-                    if (glassSoundCounter > 3) {
-                        glassSoundCounter = 0;
-                        if (AssetManager.soundEnabled) AssetManager.glassMusic.play();
-                    }
-                } else currentlyCrushing = false;
-            }
-
-
-
-            else if (missionMode && currentMissionNumber == AssetManager.MISSION_SILENCE_IS_GOLDEN) {
-                if (currentVolume < -80 && activeWall.isActive) {
-                    activeWall.addHealth(-2);
-                    addScore(10);
-                    currentlyCrushing = true;
-                    if (glassSoundCounter > 3) {
-                        glassSoundCounter = 0;
-                        if (AssetManager.soundEnabled) AssetManager.glassMusic.play();
-                    }
-                } else currentlyCrushing = false;
-            } else if (missionMode && currentMissionNumber == AssetManager.MISSION_SHAKE_IT_BABY) {
-                if (accelerometerDeltaZ > 1500 && activeWall.isActive) {
-                    activeWall.addHealth(-2);
-                    addScore(10);
-                    currentlyCrushing = true;
-                    if (glassSoundCounter > 3) {
-                        glassSoundCounter = 0;
-                        if (AssetManager.soundEnabled) AssetManager.glassMusic.play();
-                    }
-                } else currentlyCrushing = false;
-            } else if (missionMode && currentMissionNumber == AssetManager.MISSION_GOOD_ACOUSTICS) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive) {
-                    activeWall.addHealth(-10);
-                    addScore(50);
-                    currentlyCrushing = true;
-                    if (glassSoundCounter > 3) {
-                        glassSoundCounter = 0;
-                        if (AssetManager.soundEnabled) AssetManager.glassMusic.play();
-                    }
-                } else currentlyCrushing = false;
-            } else if (missionMode && currentMissionNumber == AssetManager.MISSION_HEAR_ME_ROAR) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && currentVolume > -50) {
-                    activeWall.addHealth(-2);
-                    currentlyCrushing = true;
-                    if (glassSoundCounter > 3) {
-                        glassSoundCounter = 0;
-                        if (AssetManager.soundEnabled) AssetManager.glassMusic.play();
-                    }
-                } else currentlyCrushing = false;
-            } else if (missionMode && currentMissionNumber == AssetManager.MISSION_HEAR_THEM_CRUSH) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && AssetManager.soundEnabled) {
-                    activeWall.addHealth(-2);
-                    currentlyCrushing = true;
-                    if (glassSoundCounter > 3) {
-                        glassSoundCounter = 0;
-                        if (AssetManager.soundEnabled) AssetManager.glassMusic.play();
-                    }
-                } else currentlyCrushing = false;
-            } else if (missionMode && currentMissionNumber == AssetManager.MISSION_HUMMING_GENTLY) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && currentVolume < -60) {
-                    activeWall.addHealth(-2);
-                    currentlyCrushing = true;
-                    if (glassSoundCounter > 3) {
-                        glassSoundCounter = 0;
-                        if (AssetManager.soundEnabled) AssetManager.glassMusic.play();
-                    }
-                } else currentlyCrushing = false;
-            } else if (missionMode && currentMissionNumber == AssetManager.MISSION_RENDEZVOUZ_AT_MIDNIGHT) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && getCurrentHour() == 0) {
-                    activeWall.addHealth(-2);
-                    currentlyCrushing = true;
-                    if (glassSoundCounter > 3) {
-                        glassSoundCounter = 0;
-                        if (AssetManager.soundEnabled) AssetManager.glassMusic.play();
-                    }
-                } else currentlyCrushing = false;
-            } else if (missionMode && currentMissionNumber == AssetManager.MISSION_SHAKE_IT_REAL_GOOD) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && accelerometerDeltaZ > 1000) {
-                    activeWall.addHealth(-2);
-                    currentlyCrushing = true;
-                    if (glassSoundCounter > 3) {
-                        glassSoundCounter = 0;
-                        if (AssetManager.soundEnabled) AssetManager.glassMusic.play();
-                    }
-                } else currentlyCrushing = false;
-            } else if (missionMode && currentMissionNumber == AssetManager.MISSION_THIRD_TIMES_A_CHARM) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && AssetManager.mission43Failures >= 2) {
-                    activeWall.addHealth(-2);
-                    currentlyCrushing = true;
-                    if (glassSoundCounter > 3) {
-                        glassSoundCounter = 0;
-                        if (AssetManager.soundEnabled) AssetManager.glassMusic.play();
-                    }
-                } else currentlyCrushing = false;
-            } else if (missionMode && currentMissionNumber == AssetManager.MISSION_HEAR_ME_ROARER) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && currentVolume > -50) {
-                    activeWall.addHealth(-2);
-                    currentlyCrushing = true;
-                    if (glassSoundCounter > 3) {
-                        glassSoundCounter = 0;
-                        if (AssetManager.soundEnabled) AssetManager.glassMusic.play();
-                    }
-                } else currentlyCrushing = false;
-
-            } else if (missionMode && currentMissionNumber == AssetManager.MISSION_TWIST_AND_SHOUT) {
-                if (currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch && activeWall.isActive && accelerometerDeltaZ > 1000 && currentVolume > -50) {
-                    activeWall.addHealth(-2);
-                    currentlyCrushing = true;
-                    if (glassSoundCounter > 3) {
-                        glassSoundCounter = 0;
-                        if (AssetManager.soundEnabled) AssetManager.glassMusic.play();
-                    }
-                } else currentlyCrushing = false;
-            }
+            setCorrectPitchBoundaries();
+            checkCrushingConditions();
         }
 
-        // dodawanie obu efektow
-
-        if (currentlyCrushing == true && activeWall.wallHealth > 0 && !gamePaused) {
-
+        if (currentlyCrushing && activeWall.wallHealth > 0 && !gamePaused) {
+            // Crushing and correct pitch particle effects
             addCrushingParticleEffect();
-
-            if (!((missionMode && (currentMissionNumber == 5 || currentMissionNumber == 14 || currentMissionNumber == 23)))) {
+            if (!missionWithoutCorrectPitchEffects()) {
                 addCorrectPitchParticleEffect();
             }
-
-            if (missionMode && currentMissionNumber != 5 && currentMissionNumber != 14 && currentMissionNumber != 22 && currentMissionNumber != 23) {
-                if (Math.abs(currentPitch - activeWall.wallPitch) < 0.0561 * activeWall.wallPitch) {
-                    int howmuch = (int) (10 - ((float) (Math.abs(currentPitch - activeWall.wallPitch)) / activeWall.wallPitch) * 178.17);
-                    addScore(howmuch);
-                    scrollHandler.currentWallScore += howmuch;
+            // Scoring
+            if (missionMode && !missionWithDifferentScoring()) {
+                if (pitchIsCorrect()) {
+                    addScore(calculateMomentaryScore());
+                    scrollHandler.currentWallScore += calculateMomentaryScore();
                 }
             }
         }
 
-        // koniec gry
-
+        // Scroller collides with player
         if (player.isAlive() && scrollHandler.collides(player)) {
-            if (missionMode && currentMissionNumber == 7 && scrollHandler.currentWallNumber == 7) {
-                scrollHandler.stopScrolling();
-                success();
-            } else {
-                gameOver();
-                if (!missionMode) {
-                    if (score > AssetManager.freePlayHighScore) {
-                        AssetManager.setHighScore(score);
-                        currentGameState = GameState.HIGHSCORE;
-                    }
+            handleCollisionWithScroller();
+        }
+    }
+
+    private boolean missionWithoutCorrectPitchEffects() {
+        return (missionMode && (
+                currentMissionNumber == AssetManager.MISSION_TRY_ANOTHER_WAY ||
+                        currentMissionNumber == AssetManager.MISSION_SHAKE_IT_BABY ||
+                        currentMissionNumber == AssetManager.MISSION_TRY_YET_ANOTHER_WAY
+        ));
+    }
+
+    private boolean missionWithDifferentScoring() {
+        return currentMissionNumber == AssetManager.MISSION_TRY_ANOTHER_WAY ||
+                currentMissionNumber == AssetManager.MISSION_SHAKE_IT_BABY ||
+                currentMissionNumber == AssetManager.MISSION_GOOD_ACOUSTICS ||
+                currentMissionNumber == AssetManager.MISSION_TRY_YET_ANOTHER_WAY;
+    }
+
+    private boolean pitchIsCorrect() {
+        return currentPitch > minCorrectPitch && currentPitch < maxCorrectPitch;
+    }
+
+    private int calculateMomentaryScore() {
+        return (int) (10 - ((float) (Math.abs(currentPitch - activeWall.wallPitch)) / activeWall.wallPitch) * 178.17);
+    }
+
+    private void handleCollisionWithScroller() {
+        if (missionMode && currentMissionNumber == AssetManager.MISSION_THE_LUCKY_NUMBER && scrollHandler.currentWallNumber == 7) {
+            scrollHandler.stopScrolling();
+            success();
+        } else {
+            gameOver();
+            if (!missionMode) {
+                if (score > AssetManager.freePlayHighScore) {
+                    AssetManager.setHighScore(score);
+                    currentGameState = GameState.HIGHSCORE;
                 }
             }
         }
@@ -319,7 +210,6 @@ public class GameWorld {
     }
 
     public void success() {
-
         if (missionMode) {
             if (AssetManager.missionsCompleted < currentMissionNumber) {
                 AssetManager.setMissionCompleted(currentMissionNumber, score);
@@ -329,34 +219,16 @@ public class GameWorld {
                 }
             }
         }
-
         setStarsToBeDrawn();
-
-
         prepareSuccessTransition();
-
-        for(int i=0;i<3;i++){
-            for (Alien alien : alienRows[i]) {
-                alien.setState(Alien.State.SUCCESS);
-            }
-        }
-
+        successAliens();
         currentGameState = GameState.SUCCESS;
-
-        if (AssetManager.soundEnabled) {
-            AssetManager.successMusic.play();
-        }
-
-
+        AssetManager.playMusic(AssetManager.successMusic);
     }
 
     public void readyToPlay() {
-
         blackoutTaskStarted = false;
-
-
         resetStars();
-
         randomizeAliens();
         restartWorld();
         currentGameState = GameState.READY_TO_PLAY;
@@ -383,24 +255,14 @@ public class GameWorld {
     }
 
     public void restartWorld() {
-
         if (missionMode) {
-            continuousWalls = false;
-            for (int i = 0; i < continuousWallsMissions.length; i++) {
-                if (currentMissionNumber == continuousWallsMissions[i]) continuousWalls = true;
-            }
+            continuousWalls = checkIfMissionHasContinuousWalls();
         }
-
         score = 0;
         crushedWallsCounter = 0;
         player.onRestart();
         scrollHandler.onRestart();
-
-        for(int i=0;i<3;i++){
-            for (int j = 0; j < alienRows[i].size(); j++){
-                alienRows[i].get(j).reset();
-            }
-        }
+        restartAliens();
         currentGameState = GameState.READY_TO_PLAY;
     }
 
@@ -458,27 +320,16 @@ public class GameWorld {
 
 
     public void addCrushingParticleEffect() {
-
         Random random = new Random();
         int effectType = random.nextInt(2);
 
-        if (effectType == 0) {
-            ParticleEffectPool.PooledEffect effect = AssetManager.crushingParticleEffectPool.obtain();
-            effect.setPosition(activeWall.getWallRectangle().getX(), activeWall.getWallRectangle().getY() + gameHeight / 25);
+        ParticleEffectPool.PooledEffect effect = AssetManager.crushingParticleEffectPools[effectType].obtain();
+        effect.setPosition(activeWall.getWallRectangle().getX(), activeWall.getWallRectangle().getY() + gameHeight / 25);
 
-            float color = ((float) scrollHandler.getActiveWall().wallPitch - 95) * 255 / 1020;
-            float[] colors = {color / 255.0f, 1, 1};
-            effect.findEmitter("Untitled").getTint().setColors(colors);
-            AssetManager.glassParticleEffects.add(effect);
-        } else {
-            ParticleEffectPool.PooledEffect effect = AssetManager.crushingParticleEffectPool2.obtain();
-            effect.setPosition(activeWall.getWallRectangle().getX(), activeWall.getWallRectangle().getY() + gameHeight / 25);
-
-            float color = ((float) scrollHandler.getActiveWall().wallPitch - 95) * 255 / 1020;
-            float[] colors = {color / 255.0f, 1, 1};
-            effect.findEmitter("Untitled").getTint().setColors(colors);
-            AssetManager.glassParticleEffects.add(effect);
-        }
+        float color = ((float) scrollHandler.getActiveWall().wallPitch - 95) * 255 / 1020;
+        float[] colors = {color / 255.0f, 1, 1};
+        effect.findEmitter("Untitled").getTint().setColors(colors);
+        AssetManager.glassParticleEffects.add(effect);
     }
 
     public void addCorrectPitchParticleEffect() {
@@ -496,6 +347,14 @@ public class GameWorld {
     public void createAlienRows() {
         for (int i = 0; i < 3; i++) {
             alienRows[i] = new ArrayList<Alien>();
+        }
+    }
+
+    public void restartAliens() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < alienRows[i].size(); j++) {
+                alienRows[i].get(j).reset();
+            }
         }
     }
 
@@ -523,6 +382,14 @@ public class GameWorld {
                 alienRows[i].get(j).coolTimeThreshold = random.nextInt(40) + 80;
                 alienRows[i].get(j).waitTimeThreshold = random.nextInt(10) + 1;
                 alienRows[i].get(j).setState(Alien.State.BEFORE_COOL);
+            }
+        }
+    }
+
+    public void successAliens(){
+        for (int i = 0; i < 3; i++) {
+            for (Alien alien : alienRows[i]) {
+                alien.setState(Alien.State.SUCCESS);
             }
         }
     }
@@ -618,7 +485,7 @@ public class GameWorld {
         currentGameState = GameState.GAMEOVER;
         AssetManager.playMusic(AssetManager.gameOverMusic);
         AssetManager.vibrate(600);
-        updateHighScores();
+        updateScoresAndStars();
         updateWallFailureNumbers();
     }
 
@@ -693,12 +560,14 @@ public class GameWorld {
     }
 
     private void playCrushingSound() {
-        if (AssetManager.soundEnabled) {
-            if (!AssetManager.glassMusic.isPlaying()) {
-                AssetManager.glassMusic.play();
-            } else {
-                if (!(AssetManager.glassMusic.getPosition() > 0.2)) {
+        if (currentlyCrushing) {
+            if (AssetManager.soundEnabled) {
+                if (!AssetManager.glassMusic.isPlaying()) {
                     AssetManager.glassMusic.play();
+                } else {
+                    if (!(AssetManager.glassMusic.getPosition() > 0.2)) {
+                        AssetManager.glassMusic.play();
+                    }
                 }
             }
         }
@@ -712,12 +581,12 @@ public class GameWorld {
             AssetManager.themeMusic.stop();
         }
         glassSoundCounter++;
-        currentVolume = SoundHandler.getSoundVolume();
+        currentVoiceVolume = SoundHandler.getSoundVolume();
     }
 
     private void updateAliens() {
-        if(!gamePaused){
-            for (int i=0;i<3;i++){
+        if (!gamePaused) {
+            for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < alienRows[i].size(); j++) {
                     alienRows[i].get(j).update();
                 }
@@ -738,7 +607,7 @@ public class GameWorld {
         }
     }
 
-    private void increaseFreePlayWallSpeed() {
+    private void updateFreePlayWallSpeed() {
         if (!missionMode) {
             for (int i = 1; i < 15; i++) {
                 if (score == 5 * i) {
@@ -831,7 +700,7 @@ public class GameWorld {
         }
     }
 
-    private void updateHighScores() {
+    private void updateScoresAndStars() {
         if (!missionMode) {
             AssetManager.addOverallWallsCount(score);
             AssetManager.addFreePlayWalls(score);
@@ -848,6 +717,15 @@ public class GameWorld {
                 }
             }
         }
+    }
+
+    private boolean checkIfMissionHasContinuousWalls() {
+        for (int i = 0; i < AssetManager.missionsWithContinuousWalls.length; i++) {
+            if (currentMissionNumber == AssetManager.missionsWithContinuousWalls[i]) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void updateWallFailureNumbers() {
@@ -879,7 +757,7 @@ public class GameWorld {
         }
     }
 
-    private void setLastWallForMission13() {
+    private void updateLastWallForMission13() {
         if (missionMode && currentMissionNumber == AssetManager.MISSION_DONT_COUNT_YOUR_CHICKENS) {
             if (scrollHandler.currentWallNumber == AssetManager.MISSION_13_FAST_WALL_NUMBER) {
                 ScrollHandler.WALL_SCROLL_SPEED = -150;
@@ -889,5 +767,101 @@ public class GameWorld {
         }
     }
 
+    private boolean specificCrushingConditions() {
+        for (int i = 0; i < AssetManager.specificConditionsMissionNumbers.length; i++) {
+            if (currentMissionNumber == AssetManager.specificConditionsMissionNumbers[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
 
+    private void checkCrushingConditions() {
+        if (activeWall.isActive) {
+            if (specificCrushingConditions()) {
+                checkSpecificCrushingConditions();
+            } else {
+                checkStandardCrushingConditions();
+            }
+            playCrushingSound();
+        }
+    }
+
+    private void checkSpecificCrushingConditions() {
+        // By default
+        currentlyCrushing = false;
+        if (currentMissionNumber == AssetManager.MISSION_SOMEONE_HAS_TO_LOOK) {
+            if (pitchIsCorrect() && AssetManager.aliensEnabled) {
+                activeWall.addHealth(-2);
+                currentlyCrushing = true;
+            }
+        } else if (currentMissionNumber == AssetManager.MISSION_SILENCE_IS_GOLDEN) {
+            if (currentVoiceVolume < -80) {
+                activeWall.addHealth(-2);
+                addScore(10);
+                currentlyCrushing = true;
+            }
+        } else if (currentMissionNumber == AssetManager.MISSION_SHAKE_IT_BABY) {
+            if (accelerometerDeltaZ > 1500) {
+                activeWall.addHealth(-2);
+                addScore(10);
+                currentlyCrushing = true;
+            }
+        } else if (currentMissionNumber == AssetManager.MISSION_GOOD_ACOUSTICS) {
+            if (pitchIsCorrect()) {
+                activeWall.addHealth(-10);
+                addScore(50);
+                currentlyCrushing = true;
+            }
+        } else if (currentMissionNumber == AssetManager.MISSION_HEAR_ME_ROAR) {
+            if (pitchIsCorrect() && currentVoiceVolume > -50) {
+                activeWall.addHealth(-2);
+                currentlyCrushing = true;
+            }
+        } else if (currentMissionNumber == AssetManager.MISSION_HEAR_THEM_CRUSH) {
+            if (pitchIsCorrect() && AssetManager.soundEnabled) {
+                activeWall.addHealth(-2);
+                currentlyCrushing = true;
+            }
+        } else if (currentMissionNumber == AssetManager.MISSION_HUMMING_GENTLY) {
+            if (pitchIsCorrect() && currentVoiceVolume < -60) {
+                activeWall.addHealth(-2);
+                currentlyCrushing = true;
+            }
+        } else if (currentMissionNumber == AssetManager.MISSION_RENDEZVOUZ_AT_MIDNIGHT) {
+            if (pitchIsCorrect() && getCurrentHour() == 0) {
+                activeWall.addHealth(-2);
+                currentlyCrushing = true;
+            }
+        } else if (currentMissionNumber == AssetManager.MISSION_SHAKE_IT_REAL_GOOD) {
+            if (pitchIsCorrect() && accelerometerDeltaZ > 1000) {
+                activeWall.addHealth(-2);
+                currentlyCrushing = true;
+            }
+        } else if (currentMissionNumber == AssetManager.MISSION_THIRD_TIMES_A_CHARM) {
+            if (pitchIsCorrect() && AssetManager.mission43Failures >= 2) {
+                activeWall.addHealth(-2);
+                currentlyCrushing = true;
+            }
+        } else if (currentMissionNumber == AssetManager.MISSION_HEAR_ME_ROARER) {
+            if (pitchIsCorrect() && currentVoiceVolume > -50) {
+                activeWall.addHealth(-2);
+                currentlyCrushing = true;
+            }
+        } else if (currentMissionNumber == AssetManager.MISSION_TWIST_AND_SHOUT) {
+            if (pitchIsCorrect() && accelerometerDeltaZ > 1000 && currentVoiceVolume > -50) {
+                activeWall.addHealth(-2);
+                currentlyCrushing = true;
+            }
+        }
+    }
+
+    private void checkStandardCrushingConditions() {
+        if (pitchIsCorrect()) {
+            activeWall.addHealth(-2);
+            currentlyCrushing = true;
+        } else {
+            currentlyCrushing = false;
+        }
+    }
 }

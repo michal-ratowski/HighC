@@ -16,7 +16,6 @@ import com.ratowski.helpers.AssetManager;
 import com.ratowski.voicegame.Game;
 
 public class SplashScreen implements Screen {
-
     private TweenManager tweenManager;
     private SpriteBatch spriteBatch;
     private Sprite logoSprite;
@@ -45,6 +44,7 @@ public class SplashScreen implements Screen {
     private void setupLogoTween() {
         Tween.registerAccessor(Sprite.class, new SpriteAccessor());
         tweenManager = new TweenManager();
+        // As the callback (animation finished) is registered, new GameScren is created
         TweenCallback tweenCallback = new TweenCallback() {
             @Override
             public void onEvent(int type, BaseTween<?> source) {

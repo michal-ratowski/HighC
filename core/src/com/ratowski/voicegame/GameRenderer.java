@@ -671,7 +671,7 @@ public class GameRenderer {
 
         float voiceLevel;
 
-        voiceLevel = (float) (5.333 * gameWorld.currentVolume + 480);
+        voiceLevel = (float) (5.333 * gameWorld.currentVoiceVolume + 480);
 
         if (voiceLevel < 0) voiceLevel = 0;
         else if (voiceLevel > 320) voiceLevel = 320;
