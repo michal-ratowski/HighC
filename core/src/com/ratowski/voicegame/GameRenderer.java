@@ -36,48 +36,52 @@ import aurelienribon.tweenengine.TweenManager;
 
 public class GameRenderer {
 
-    private GameWorld gameWorld;
-    private OrthographicCamera camera;
-    private ShapeRenderer shapeRenderer;
-    private SpriteBatch spriteBatch;
-    private float currentCameraRotation;
-
+    // Enums
     enum panelOptionsEnum {
         PAUSE_PANEL,
         MISSION_PANEL
     }
 
-    private int midPointY;
-    private int gameHeight;
-    private String textToDisplay;
+    // Player states
+    private final int PLAYER_NOT_SINGING = 0;
+    private final int PLAYER_LOW_NOTES = 1;
+    private final int PLAYER_HIGH_NOTES = 2;
+    private final int PLAYER_DEAD = 5;
+    private final int PLAYER_SUCCESS = 6;
 
     // Game Objects
+    private GameWorld gameWorld;
+    private OrthographicCamera camera;
+    private ShapeRenderer shapeRenderer;
+    private SpriteBatch spriteBatch;
+    private float currentCameraRotation;
     private Player player;
     private ScrollHandler scroller;
     private Wall activeWall;
     private Sky frontSky, backSky;
+    private ArrayList<Wall> walls;
+    Array<ParticleEffectPool.PooledEffect> glassParticleEffects = new Array();
+    Array<ParticleEffectPool.PooledEffect> correctPitchParticleEffects = new Array();
 
+    // Rendering variables
+    private int gameHeight;
+    private final int GAME_WIDTH = 272;
+    private int midPointY;
+    float cameraReturnY;
+    boolean firstClockRotation = false;
+    private boolean cameraChanged = false;
+    private String textToDisplay;
     boolean gettingDarker = false;
     boolean gettingLighter = false;
-    boolean wasPaused = false;
     boolean successTransition = false;
-
-    private ArrayList<Wall> walls;
-
+    boolean wasPaused = false;
     public float voiceLevel = 0;
     private int randomAngle = 0;
     int shakeCameraCounter = 0;
     int shakeConstant = 4;
     int sinusCounter = 0;
-    private final int GAME_WIDTH = 272;
-    float cameraReturnY;
-    boolean firstClockRotation = false;
-
-    Array<ParticleEffectPool.PooledEffect> glassParticleEffects = new Array();
-    Array<ParticleEffectPool.PooledEffect> correctPitchParticleEffects = new Array();
-
     private GlyphLayout glyphLayout;
-    private boolean cameraChanged = false;
+    int WALL_COLOR_CONSTANT = 6;
 
     // Buttons
     private List<com.ratowski.helpers.SimpleButton> menuButtons, optionsButtons, gameOverButtons, panelButtons, missionsButtons, pauseButtons;
@@ -208,28 +212,44 @@ public class GameRenderer {
         drawTransition(delta);
     }
 
-
     private void drawPlayer(float runTime) {
 
         if (gameWorld.stateIsSuccess()) {
-            spriteBatch.draw(AssetManager.singersTextureRegion[gameWorld.currentSingerNumber][6], player.getX(), player.getY(), player.getWidth(), player.getHeight());
+            drawPlayerSprite(PLAYER_SUCCESS);
         } else if (gameWorld.stateIsReadyToPlay()) {
-            spriteBatch.draw(AssetManager.singersTextureRegion[gameWorld.currentSingerNumber][0], player.getX(), player.getY(), player.getWidth(), player.getHeight());
+            drawPlayerSprite(PLAYER_NOT_SINGING);
         } else {
-
             if (player.isAlive()) {
-                if (gameWorld.currentPitch > AssetManager.noteFrequencies[20 + 5 * (gameWorld.currentSingerNumber - 1)])
-                    spriteBatch.draw(AssetManager.singersAnimation[gameWorld.currentSingerNumber].getKeyFrame(runTime), player.getX(), player.getY(), player.getWidth(), player.getHeight());
-                else if (gameWorld.currentPitch > AssetManager.noteFrequencies[12 + 5 * (gameWorld.currentSingerNumber - 1)])
-                    spriteBatch.draw(AssetManager.singersTextureRegion[gameWorld.currentSingerNumber][2], player.getX(), player.getY(), player.getWidth(), player.getHeight());
-                else if (gameWorld.currentPitch > 65)
-                    spriteBatch.draw(AssetManager.singersTextureRegion[gameWorld.currentSingerNumber][1], player.getX(), player.getY(), player.getWidth(), player.getHeight());
-                else
-                    spriteBatch.draw(AssetManager.singersTextureRegion[gameWorld.currentSingerNumber][0], player.getX(), player.getY(), player.getWidth(), player.getHeight());
-            } else {
-                spriteBatch.draw(AssetManager.singersTextureRegion[gameWorld.currentSingerNumber][5], player.getX(), player.getY(), player.getWidth(), player.getHeight());
+                // Very high notes
+                if (gameWorld.currentPitch > AssetManager.noteFrequencies[20 + 5 * (gameWorld.currentSingerNumber - 1)]) {
+                    drawPlayerVibratoAnimation(runTime);
+                }
+                // High notes
+                else if (gameWorld.currentPitch > AssetManager.noteFrequencies[12 + 5 * (gameWorld.currentSingerNumber - 1)]) {
+                    drawPlayerSprite(PLAYER_HIGH_NOTES);
+                }
+                // Low notes
+                else if (gameWorld.currentPitch > 65) {
+                    drawPlayerSprite(PLAYER_LOW_NOTES);
+                }
+                // Not singing
+                else {
+                    drawPlayerSprite(PLAYER_NOT_SINGING);
+                }
+            }
+            // Dead
+            else {
+                drawPlayerSprite(PLAYER_DEAD);
             }
         }
+    }
+
+    private void drawPlayerSprite(int spriteType) {
+        spriteBatch.draw(AssetManager.singersTextureRegion[gameWorld.currentSingerNumber][spriteType], player.getX(), player.getY(), player.getWidth(), player.getHeight());
+    }
+
+    private void drawPlayerVibratoAnimation(float runTime) {
+        spriteBatch.draw(AssetManager.singersAnimation[gameWorld.currentSingerNumber].getKeyFrame(runTime), player.getX(), player.getY(), player.getWidth(), player.getHeight());
     }
 
     private void drawAlienRow(ArrayList<Alien> alienList, float runTime) {
@@ -239,20 +259,16 @@ public class GameRenderer {
         }
     }
 
-    private TextureRegion getAlienTextureRegionToDraw (float runTime, Alien.State alienState){
+    private TextureRegion getAlienTextureRegionToDraw(float runTime, Alien.State alienState) {
         if (alienState == Alien.State.COOL) {
             return AssetManager.alienAnimation[0].getKeyFrame(runTime);
-        }
-        else if (alienState == Alien.State.SUCCESS) {
+        } else if (alienState == Alien.State.SUCCESS) {
             return AssetManager.alienTextureRegion[1];
-        }
-        else if (alienState == Alien.State.READY) {
+        } else if (alienState == Alien.State.READY) {
             return AssetManager.alienTextureRegion[0];
-        }
-        else if (alienState == Alien.State.MEH) {
+        } else if (alienState == Alien.State.MEH) {
             return AssetManager.alienTextureRegion[8];
-        }
-        else {
+        } else {
             return AssetManager.alienTextureRegion[0];
         }
     }
@@ -276,22 +292,17 @@ public class GameRenderer {
         if (AssetManager.aliensEnabled) {
             drawAlienRow(gameWorld.alienRows[2], runTime);
         }
-
         spriteBatch.draw(AssetManager.blackColorTextureRegion, 110, gameHeight / 6 + 40, 200, 60);
-
         if (AssetManager.aliensEnabled) {
             drawAlienRow(gameWorld.alienRows[1], runTime);
         }
-
         spriteBatch.draw(AssetManager.blackColorTextureRegion, 100, gameHeight / 6, 200, 60);
-
         if (AssetManager.aliensEnabled) {
             drawAlienRow(gameWorld.alienRows[0], runTime);
         }
     }
 
     private void drawOptionsUI() {
-
         spriteBatch.draw(AssetManager.playerNamesTextureRegion[gameWorld.currentSingerNumber], 20, 360);
         spriteBatch.draw(AssetManager.optionsTexture, 31, 100);
 
@@ -315,7 +326,6 @@ public class GameRenderer {
         for (int i = 5; i < 11; i++) {
             bistableButtons.get(i).draw(spriteBatch);
         }
-
     }
 
     private void drawMissionPreviewIfNecessary() {
@@ -419,52 +429,40 @@ public class GameRenderer {
     private void drawScoreboard(float delta) {
         drawSuccessTransition(delta);
 
+        // If world already blacked out after stopping playing
         if (gameWorld.blackAlphaValue.getValue() >= 0.55) {
-
+            drawScoreboardTexture();
+            drawGameOverButtons();
             if (gameWorld.missionMode) {
-                if (gameWorld.stateIsSuccess()) {
-                    spriteBatch.draw(AssetManager.successScoreboardTextureRegion, 10, midPointY - 82, 252, 160);
-                } else {
-                    spriteBatch.draw(AssetManager.missionModeGameOverScoreboardTexture, 10, midPointY - 82, 252, 160);
-                }
-
-                textToDisplay = "" + gameWorld.getScore();
-                glyphLayout.setText(AssetManager.scoreFont, textToDisplay);
-
-                displayMissionTexts();
-
-
-                if (gameWorld.allStarsDrawn) {
-                    for (int i = 0; i < gameOverButtons.size() - 1; i++) {
-                        gameOverButtons.get(i).draw(spriteBatch);
-                    }
-                    if (gameWorld.stateIsSuccess() || AssetManager.missionsCompleted >= gameWorld.currentMissionNumber) {
-                        gameOverButtons.get(gameOverButtons.size() - 1).draw(spriteBatch);
-                    }
-                }
+                drawMissionTexts();
             } else {
-
-                spriteBatch.draw(AssetManager.gameOverScoreboardTextureRegion, 10, midPointY - 82, 252, 160);
-                if (gameWorld.allStarsDrawn) {
-
-                    for (int i = 0; i < gameOverButtons.size() - 1; i++) {
-                        gameOverButtons.get(i).draw(spriteBatch);
-                    }
-                }
-
-                textToDisplay = "" + gameWorld.getScore();
-                glyphLayout.setText(AssetManager.scoreFont, textToDisplay);
-                AssetManager.scoreFont.draw(spriteBatch, textToDisplay, 73 - glyphLayout.width / 2, midPointY - 33);
-
-                textToDisplay = "" + AssetManager.freePlayHighScore;
-                glyphLayout.setText(AssetManager.scoreFont, textToDisplay);
-                AssetManager.scoreFont.draw(spriteBatch, textToDisplay, 199 - glyphLayout.width / 2, midPointY - 33);
-
+                drawFreePlayTexts();
             }
-
             drawScoreboardStars();
         }
+    }
 
+    private void drawScoreboardTexture() {
+        if (gameWorld.missionMode) {
+            if (gameWorld.stateIsSuccess()) {
+                spriteBatch.draw(AssetManager.successScoreboardTextureRegion, 10, midPointY - 82, 252, 160);
+            } else {
+                spriteBatch.draw(AssetManager.missionModeGameOverScoreboardTexture, 10, midPointY - 82, 252, 160);
+            }
+        } else {
+            spriteBatch.draw(AssetManager.gameOverScoreboardTextureRegion, 10, midPointY - 82, 252, 160);
+        }
+    }
+
+    private void drawGameOverButtons() {
+        if (gameWorld.allStarsDrawn) {
+            for (int i = 0; i < gameOverButtons.size() - 1; i++) {
+                gameOverButtons.get(i).draw(spriteBatch);
+            }
+            if (gameWorld.stateIsSuccess() || AssetManager.missionsCompleted >= gameWorld.currentMissionNumber) {
+                gameOverButtons.get(gameOverButtons.size() - 1).draw(spriteBatch);
+            }
+        }
     }
 
     private void drawExtraColor(float alpha, TextureRegion textureRegion) {
@@ -478,7 +476,6 @@ public class GameRenderer {
     }
 
     private void drawPanel(panelOptionsEnum panelOption) {
-
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Color c = spriteBatch.getColor();
@@ -502,10 +499,8 @@ public class GameRenderer {
 
     private void drawMissionPages() {
 
-        // How many buttons to display on a page
-        int buttonsToDisplay = getButtonsToDisplayNumber(gameWorld.currentMissionPage);
-
         // Completed missions' buttons
+        int buttonsToDisplay = getButtonsToDisplayNumber(gameWorld.currentMissionPage);
         for (int i = (16 * gameWorld.currentMissionPage - 1); i < buttonsToDisplay; i++) {
             spriteBatch.draw(AssetManager.blackRectangleTexture, missionsButtons.get(i).x, missionsButtons.get(i).y - 15, 50, 30);
             missionsButtons.get(i).draw(spriteBatch);
@@ -525,10 +520,11 @@ public class GameRenderer {
 
     private void drawMissionMenuStars(int i) {
         for (int j = 1; j < 6; j++) {
-            if (AssetManager.getMissionScore(i + 1) > AssetManager.missionMaxScores[i + 1] * 0.1 * j)
+            if (AssetManager.getMissionScore(i + 1) > AssetManager.missionMaxScores[i + 1] * 0.1 * j) {
                 spriteBatch.draw(AssetManager.starTextureRegion, missionsButtons.get(i).x - 5 + 9 * j, missionsButtons.get(i).y - 8, 6, 6);
-            else
+            } else {
                 spriteBatch.draw(AssetManager.noStarTextureRegion, missionsButtons.get(i).x - 5 + 9 * j, missionsButtons.get(i).y - 8, 6, 6);
+            }
         }
     }
 
@@ -545,7 +541,7 @@ public class GameRenderer {
     private void drawVisibleWalls() {
 
         for (Wall wall : walls) {
-            float color = wall.noteNumber * 6;
+            float color = wall.noteNumber * WALL_COLOR_CONSTANT;
 
             // Wall core
             if (wall.wallHealth > 0) {
@@ -589,12 +585,10 @@ public class GameRenderer {
             ParticleEffectPool.PooledEffect effect = correctPitchParticleEffects.get(i);
             effect.draw(spriteBatch, delta);
         }
-
         for (int i = correctPitchParticleEffects.size - 1; i >= 0; i--) {
             ParticleEffectPool.PooledEffect effect = correctPitchParticleEffects.get(i);
             effect.draw(spriteBatch, delta);
         }
-
     }
 
     private void drawStarEffects(float delta) {
@@ -646,7 +640,6 @@ public class GameRenderer {
             shapeRenderer.rect(8, midPointY - 170 + wallPitchLevel - thresholdHeight / 2, 12, thresholdHeight);
         }
 
-
         if (voicePitchLevel < 0) {
             voicePitchLevel = 0;
         } else if (voicePitchLevel > 320) {
@@ -658,7 +651,6 @@ public class GameRenderer {
 
         shapeRenderer.setColor(1, 0.8f, 0, 1);
         shapeRenderer.rect(8, voiceLevel - 1, 12, 2);
-
     }
 
     private void drawVoiceLevel() {
@@ -694,16 +686,12 @@ public class GameRenderer {
                 shapeRenderer.rect(252, midPointY - 170 + 213.35f, 12, 106.66f);
             }
         }
-
         this.voiceLevel = midPointY - 170 + voiceLevel;
-
         shapeRenderer.setColor(1, 0.8f, 0, 1);
         shapeRenderer.rect(252, this.voiceLevel - 1, 12, 2);
-
     }
 
     // Texts
-
     private void drawScore() {
         glyphLayout.setText(AssetManager.numberFont, "" + gameWorld.getScore());
         AssetManager.numberFont.draw(spriteBatch, "" + gameWorld.getScore(), 10, gameHeight - glyphLayout.height / 2);
@@ -725,7 +713,6 @@ public class GameRenderer {
     }
 
     // Tweening
-
     public void prepareTransition() {
         alpha.setValue(1);
         Tween.registerAccessor(Value.class, new ValueAccessor());
@@ -746,17 +733,10 @@ public class GameRenderer {
     }
 
     private void drawTransition(float delta) {
-
         if (gettingDarker) {
             if (alpha.getValue() < 1) {
                 manager.update(delta);
-                Gdx.gl.glEnable(GL20.GL_BLEND);
-                Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-                shapeRenderer.begin(ShapeType.Filled);
-                shapeRenderer.setColor(0, 0, 0, alpha.getValue());
-                shapeRenderer.rect(0, 0, 272, gameHeight);
-                shapeRenderer.end();
-                Gdx.gl.glDisable(GL20.GL_BLEND);
+                drawBlackAlphaRectangle(delta);
             } else {
                 gettingDarker = false;
                 prepareTransition();
@@ -764,18 +744,22 @@ public class GameRenderer {
         } else if (gettingLighter) {
             if (alpha.getValue() > 0) {
                 manager.update(delta);
-                Gdx.gl.glEnable(GL20.GL_BLEND);
-                Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-                shapeRenderer.begin(ShapeType.Filled);
-                shapeRenderer.setColor(0, 0, 0, alpha.getValue());
-                shapeRenderer.rect(0, 0, 272, gameHeight);
-                shapeRenderer.end();
-                Gdx.gl.glDisable(GL20.GL_BLEND);
-
+                drawBlackAlphaRectangle(delta);
             } else {
                 gettingLighter = false;
             }
         }
+    }
+
+    private void drawBlackAlphaRectangle(float delta) {
+        manager.update(delta);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        shapeRenderer.begin(ShapeType.Filled);
+        shapeRenderer.setColor(0, 0, 0, alpha.getValue());
+        shapeRenderer.rect(0, 0, 272, gameHeight);
+        shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     private void drawHelpUI() {
@@ -818,78 +802,95 @@ public class GameRenderer {
 
     private void rotateCameraIfNecessary() {
         sinusCounter++;
-
         if (gameWorld.missionMode) {
             if (gameWorld.currentMissionNumber == AssetManager.MISSION_SOMETHING_WRONG) {
-                if (gameWorld.stateIsRunning() && !gameWorld.gamePaused) {
-                    if (currentCameraRotation == 0) {
-                        rotateCamera(180);
-                    }
-                } else {
-                    if (currentCameraRotation == 180) {
-                        rotateCamera(-180);
-                    }
-                }
+                rotateCameraUpsideDown();
             } else if (gameWorld.currentMissionNumber == AssetManager.MISSION_YOU_DONT_KNOW_WHEN) {
-
-                Random random = new Random();
-                int randNum = random.nextInt(50) + 1;
-
-                if (gameWorld.stateIsRunning() && !gameWorld.gamePaused) {
-                    if (randNum == 1) {
-                        if (currentCameraRotation == 0) {
-                            rotateCamera(180);
-                        } else if (currentCameraRotation == 180) {
-                            rotateCamera(-180);
-                        }
-                    }
-                } else {
-                    if (currentCameraRotation == 180) {
-                        rotateCamera(-180);
-                    }
-                }
-
+                rotateCameraAtRandom();
             } else if (gameWorld.currentMissionNumber == AssetManager.MISSION_CANT_GET_IT_RIGHT) {
-                if (gameWorld.stateIsRunning() && !gameWorld.gamePaused) {
-                    if (gameWorld.accelerometerValues[1] > 0 && currentCameraRotation == 0) {
-                        rotateCamera(180);
-                    }
-
-                    if (gameWorld.accelerometerValues[1] < 0 && currentCameraRotation == 180) {
-                        rotateCamera(-180);
-                    }
-                } else {
-                    if (currentCameraRotation != 0) {
-                        rotateCamera(-currentCameraRotation);
-                    }
-                }
+                rotateCameraContraryToAccelerometer();
             } else if (gameWorld.currentMissionNumber == AssetManager.MISSION_GRANDFATHERS_CLOCK) {
-                if (gameWorld.stateIsRunning() && !gameWorld.gamePaused) {
-                    if (!firstClockRotation) {
-                        rotateCamera(-45);
-                        sinusCounter = 0;
-                        firstClockRotation = true;
-                    }
-                    rotateCamera((float) Math.sin(0.02 * sinusCounter));
-                } else {
-                    firstClockRotation = false;
-                    if (currentCameraRotation != 0) {
-                        rotateCamera(-currentCameraRotation);
-                    }
-                }
+                rotateCameraClock();
             } else if (gameWorld.currentMissionNumber == AssetManager.MISSION_DIZZY_MISS_LIZZY) {
-                if (gameWorld.stateIsRunning() && !gameWorld.gamePaused) {
-                    rotateCamera(-2f);
-                } else {
-                    if (currentCameraRotation != 0) {
-                        rotateCamera(-currentCameraRotation);
-                    }
-                }
+                rotateCameraConstantly();
             }
         }
     }
 
-    private void displayMissionTexts() {
+    private void rotateCameraUpsideDown() {
+        if (gameWorld.stateIsRunning() && !gameWorld.gamePaused) {
+            if (currentCameraRotation == 0) {
+                rotateCamera(180);
+            }
+        } else {
+            if (currentCameraRotation == 180) {
+                rotateCamera(-180);
+            }
+        }
+    }
+
+    private void rotateCameraAtRandom() {
+        Random random = new Random();
+        int randNum = random.nextInt(50) + 1;
+        if (gameWorld.stateIsRunning() && !gameWorld.gamePaused) {
+            if (randNum == 1) {
+                if (currentCameraRotation == 0) {
+                    rotateCamera(180);
+                } else if (currentCameraRotation == 180) {
+                    rotateCamera(-180);
+                }
+            }
+        } else {
+            if (currentCameraRotation == 180) {
+                rotateCamera(-180);
+            }
+        }
+    }
+
+    private void rotateCameraContraryToAccelerometer() {
+        if (gameWorld.stateIsRunning() && !gameWorld.gamePaused) {
+            if (gameWorld.accelerometerValues[1] > 0 && currentCameraRotation == 0) {
+                rotateCamera(180);
+            }
+            if (gameWorld.accelerometerValues[1] < 0 && currentCameraRotation == 180) {
+                rotateCamera(-180);
+            }
+        } else {
+            if (currentCameraRotation != 0) {
+                rotateCamera(-currentCameraRotation);
+            }
+        }
+    }
+
+    private void rotateCameraClock() {
+        if (gameWorld.stateIsRunning() && !gameWorld.gamePaused) {
+            if (!firstClockRotation) {
+                rotateCamera(-45);
+                sinusCounter = 0;
+                firstClockRotation = true;
+            }
+            rotateCamera((float) Math.sin(0.02 * sinusCounter));
+        } else {
+            firstClockRotation = false;
+            if (currentCameraRotation != 0) {
+                rotateCamera(-currentCameraRotation);
+            }
+        }
+    }
+
+    private void rotateCameraConstantly() {
+        if (gameWorld.stateIsRunning() && !gameWorld.gamePaused) {
+            rotateCamera(-2f);
+        } else {
+            if (currentCameraRotation != 0) {
+                rotateCamera(-currentCameraRotation);
+            }
+        }
+    }
+
+    private void drawMissionTexts() {
+        textToDisplay = "" + gameWorld.getScore();
+        glyphLayout.setText(AssetManager.scoreFont, textToDisplay);
         if (gameWorld.stateIsSuccess()) {
             AssetManager.scoreFont.draw(spriteBatch, textToDisplay, 73 - glyphLayout.width / 2, midPointY - 33);
             textToDisplay = "" + AssetManager.missionHighScores[gameWorld.currentMissionNumber];
@@ -900,6 +901,15 @@ public class GameRenderer {
         }
     }
 
+    private void drawFreePlayTexts() {
+        textToDisplay = "" + gameWorld.getScore();
+        glyphLayout.setText(AssetManager.scoreFont, textToDisplay);
+        AssetManager.scoreFont.draw(spriteBatch, textToDisplay, 73 - glyphLayout.width / 2, midPointY - 33);
+
+        textToDisplay = "" + AssetManager.freePlayHighScore;
+        glyphLayout.setText(AssetManager.scoreFont, textToDisplay);
+        AssetManager.scoreFont.draw(spriteBatch, textToDisplay, 199 - glyphLayout.width / 2, midPointY - 33);
+    }
 
     private void cameraReturn(float rotation) {
 
@@ -1019,5 +1029,4 @@ public class GameRenderer {
         }
         return 0;
     }
-
 }

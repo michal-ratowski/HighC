@@ -136,14 +136,17 @@ public class AssetManager {
     public static final int MISSION_SOMEONE_HAS_TO_LOOK = 2;
     public static final int MISSION_THE_LUCKY_NUMBER = 7;
     public static final int MISSION_DONT_COUNT_YOUR_CHICKENS = 13;
+    public static final int MISSION_WAIT_FOR_IT = 15;
     public static final int MISSION_GOOD_ACOUSTICS = 22;
     public static final int MISSION_HEAR_THEM_CRUSH = 33;
     public static final int MISSION_RENDEZVOUZ_AT_MIDNIGHT = 37;
     public static final int MISSION_THIRD_TIMES_A_CHARM = 43;
+    public static final int MISSION_ALMOST_THERE = 61;
 
     // Specific walls' parameters
     public static final int MISSION_13_FAST_WALL_NUMBER = 10;
     public static final int MISSION_13_FAST_WALL_VELOCITY = -150;
+    public static final int MISSION_61_LAST_WALL_HEALTH = 500;
 
     // Animations
     public static Animation highScoreAnimation;

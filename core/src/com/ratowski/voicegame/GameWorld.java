@@ -38,11 +38,12 @@ public class GameWorld {
     private ScrollHandler scrollHandler;
     public Wall activeWall;
 
-    // Game variables
+    // Sensor values
     float[] accelerometerValues;
     public float accelerometerDeltaZ = 0;
+
+    // Game variables
     private float runTime = 0;
-    boolean previousWiFiState;
     public int score = 0;
     public int crushedWallsCounter = 0;
     public int currentSingerNumber;
@@ -54,6 +55,7 @@ public class GameWorld {
     public int currentHelpPage = 1;
     public int currentMissionPage = 1;
     public int glassSoundCounter = 0;
+    boolean wiFiOn;
 
     // Voice variables
     public int currentVoiceVolume;
@@ -83,7 +85,7 @@ public class GameWorld {
         activeWall = scrollHandler.getActiveWall();
         createAlienRows();
         randomizeAliens();
-        previousWiFiState = AssetManager.adInterface.isWifiConnected();
+        wiFiOn = AssetManager.adInterface.isWifiConnected();
     }
 
     public void updateWorld(float delta) {
@@ -114,31 +116,44 @@ public class GameWorld {
         player.update();
         scrollHandler.updateNotMenuState(delta, runTime);
         activeWall = scrollHandler.getActiveWall();
+        checkForWallCrushing();
+        handleWallCrushing();
+        checkWallCollisionWithPlayer();
+    }
 
-        // Pitch detection & check for crushing
+    private void checkForWallCrushing(){
         if (!gamePaused) {
             currentPitch = SoundHandler.getDominantFrequency();
             noteString = getClosestNoteString();
             setCorrectPitchBoundaries();
             checkCrushingConditions();
         }
+    }
 
+    private void handleWallCrushing(){
         if (currentlyCrushing && activeWall.wallHealth > 0 && !gamePaused) {
-            // Crushing and correct pitch particle effects
-            addCrushingParticleEffect();
-            if (!missionWithoutCorrectPitchEffects()) {
-                addCorrectPitchParticleEffect();
-            }
-            // Scoring
-            if (missionMode && !missionWithDifferentScoring()) {
-                if (pitchIsCorrect()) {
-                    addScore(calculateMomentaryScore());
-                    scrollHandler.currentWallScore += calculateMomentaryScore();
-                }
+            addCrushingAndPitchParticleEffects();
+            addOrdinaryMissionScore();
+        }
+    }
+
+    private void addCrushingAndPitchParticleEffects(){
+        addCrushingParticleEffect();
+        if (!missionWithoutCorrectPitchEffects()) {
+            addCorrectPitchParticleEffect();
+        }
+    }
+
+    private void addOrdinaryMissionScore(){
+        if (missionMode && !missionWithDifferentScoring()) {
+            if (pitchIsCorrect()) {
+                addScore(calculateMomentaryScore());
+                scrollHandler.currentWallScore += calculateMomentaryScore();
             }
         }
+    }
 
-        // Scroller collides with player
+    private void checkWallCollisionWithPlayer(){
         if (player.isAlive() && scrollHandler.collides(player)) {
             handleCollisionWithScroller();
         }
@@ -147,8 +162,8 @@ public class GameWorld {
     private boolean missionWithoutCorrectPitchEffects() {
         return (missionMode && (
                 currentMissionNumber == AssetManager.MISSION_TRY_ANOTHER_WAY ||
-                        currentMissionNumber == AssetManager.MISSION_SHAKE_IT_BABY ||
-                        currentMissionNumber == AssetManager.MISSION_TRY_YET_ANOTHER_WAY
+                currentMissionNumber == AssetManager.MISSION_SHAKE_IT_BABY ||
+                currentMissionNumber == AssetManager.MISSION_TRY_YET_ANOTHER_WAY
         ));
     }
 
@@ -527,9 +542,9 @@ public class GameWorld {
 
     private void reloadAd() {
         if (AssetManager.adInterface.isWifiConnected()) {
-            if (!previousWiFiState) {
+            if (!wiFiOn) {
                 AssetManager.adInterface.reloadAd();
-                previousWiFiState = true;
+                wiFiOn = true;
             }
         }
     }

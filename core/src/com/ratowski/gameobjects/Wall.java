@@ -9,12 +9,12 @@ import java.util.Random;
 public class Wall extends Scrollable {
 
     private Rectangle wallRectangle;
-    public float wallX, widthBar;
+    public float wallX, widthBarToDraw;
     public int wallPitch, meanWallPitch;
     public float wallHealth, wallMaxHealth;
     public int noteNumber;
     public boolean isActive = false;
-    public boolean scoreUpdated = false;
+    public boolean scoreUpdatedAfterDescruction = false;
     public boolean isContinuous;
     public int currentSinger;
     public boolean isVisible;
@@ -55,15 +55,12 @@ public class Wall extends Scrollable {
         this.wallHealth = wallMaxHealth;
         this.width = (int) this.wallHealth;
         this.isContinuous = wallContinuous;
-
         wallPitch = setWallPitchFromNoteNumber();
         meanWallPitch = wallPitch;
-
         isActive = false;
         isVisible = false;
-
         this.wallX = x;
-        this.widthBar = width;
+        this.widthBarToDraw = width;
     }
 
     public Rectangle getWallRectangle() {
@@ -73,22 +70,18 @@ public class Wall extends Scrollable {
     @Override
     public void updateScrollable(float delta, float runTime) {
         super.updateScrollable(delta, runTime);
-
         wallX = position.x + width * ((wallMaxHealth - wallHealth) / wallMaxHealth);
-        widthBar = width * (wallHealth / wallMaxHealth);
-
+        widthBarToDraw = width * (wallHealth / wallMaxHealth);
         updateSinusoidalWallPitch(runTime);
-        wallRectangle.set(wallX, position.y, widthBar, height);
-
+        wallRectangle.set(wallX, position.y, widthBarToDraw, height);
         updateWallVisibility();
         updateWallActiveness();
-
     }
 
     @Override
     public void reset(float newX, float scrollSpeed) {
         isActive = false;
-        scoreUpdated = false;
+        scoreUpdatedAfterDescruction = false;
         noteNumber = setRandomNoteNumber();
         wallPitch = setWallPitchFromNoteNumber();
         meanWallPitch = wallPitch;

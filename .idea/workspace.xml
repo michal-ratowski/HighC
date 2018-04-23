@@ -28,44 +28,12 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="GameRenderer.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="GameRenderer.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/voicegame/GameRenderer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="217" column="16" selection-start-line="217" selection-start-column="16" selection-end-line="217" selection-end-column="16" />
+            <state vertical-scroll-proportion="0.5976331">
+              <caret line="1029" column="17" selection-start-line="1029" selection-start-column="17" selection-end-line="1029" selection-end-column="17" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GameWorld.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/voicegame/GameWorld.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="13.407738">
-              <caret line="394" column="5" selection-start-line="394" selection-start-column="5" selection-end-line="394" selection-end-column="5" />
-              <folding>
-                <element signature="class#GameState#0;class#GameWorld#0" expanded="false" />
-                <element signature="e#6601#6602#0" expanded="true" />
-                <element signature="e#6629#6630#0" expanded="true" />
-                <element signature="e#7997#7998#0" expanded="true" />
-                <element signature="e#8049#8050#0" expanded="true" />
-                <element signature="e#8080#8081#0" expanded="true" />
-                <element signature="e#8130#8131#0" expanded="true" />
-                <element signature="e#8160#8161#0" expanded="true" />
-                <element signature="e#8209#8210#0" expanded="true" />
-                <element signature="e#8767#8768#0" expanded="true" />
-                <element signature="e#8833#8834#0" expanded="true" />
-                <element signature="e#8872#8873#0" expanded="true" />
-                <element signature="e#8932#8933#0" expanded="true" />
-                <element signature="e#8973#8974#0" expanded="true" />
-                <element signature="e#9034#9035#0" expanded="true" />
-                <element signature="e#9411#9412#0" expanded="true" />
-                <element signature="e#9473#9474#0" expanded="true" />
-                <element signature="e#9509#9510#0" expanded="true" />
-                <element signature="e#9566#9567#0" expanded="true" />
-                <element signature="e#9605#9606#0" expanded="true" />
-                <element signature="e#9665#9666#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -76,19 +44,6 @@
             <state vertical-scroll-proportion="0.0">
               <caret line="17" column="39" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AssetManager.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/helpers/AssetManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.862069">
-              <caret line="853" column="39" selection-start-line="853" selection-start-column="39" selection-end-line="853" selection-end-column="39" />
-              <folding>
-                <element signature="e#14348#14349#0" expanded="true" />
-                <element signature="e#14393#14394#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -2961,12 +2916,14 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/core/src/com/ratowski/voicegame/GameRenderer.java" />
         <option value="$PROJECT_DIR$/core/src/com/ratowski/voicegame/Game.java" />
         <option value="$PROJECT_DIR$/core/src/com/ratowski/screens/GameScreen.java" />
         <option value="$PROJECT_DIR$/core/src/com/ratowski/screens/SplashScreen.java" />
         <option value="$PROJECT_DIR$/core/src/com/ratowski/helpers/AssetManager.java" />
+        <option value="$PROJECT_DIR$/core/src/com/ratowski/gameobjects/Wall.java" />
+        <option value="$PROJECT_DIR$/core/src/com/ratowski/gameobjects/ScrollHandler.java" />
         <option value="$PROJECT_DIR$/core/src/com/ratowski/voicegame/GameWorld.java" />
+        <option value="$PROJECT_DIR$/core/src/com/ratowski/voicegame/GameRenderer.java" />
       </list>
     </option>
   </component>
@@ -3002,7 +2959,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="AndroidView">
         <subPane>
           <PATH>
@@ -3108,12 +3064,35 @@
               <option name="myItemId" value="ratowski" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gameobjects" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="HighC" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.NonAndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.NonAndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ratowski" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane" />
+      <pane id="Scratches" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -3319,13 +3298,13 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.33163264" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3282313" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -3334,7 +3313,7 @@
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.059757944" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18154311" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -3370,6 +3349,50 @@
     <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/voicegame/GameRenderer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
+          <caret line="217" column="16" selection-start-line="217" selection-start-column="16" selection-end-line="217" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/voicegame/GameWorld.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="class#GameState#0;class#GameWorld#0" expanded="false" />
+            <element signature="e#20986#21374#0" expanded="true" />
+            <element signature="e#21373#21374#0" expanded="true" />
+            <element signature="e#21404#21792#0" expanded="true" />
+            <element signature="e#21791#21792#0" expanded="true" />
+            <element signature="e#21825#22214#0" expanded="true" />
+            <element signature="e#22213#22214#0" expanded="true" />
+            <element signature="e#22247#22636#0" expanded="true" />
+            <element signature="e#22635#22636#0" expanded="true" />
+            <element signature="e#22669#23029#0" expanded="true" />
+            <element signature="e#23028#23029#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/helpers/InputHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="17" column="39" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/helpers/AssetManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="853" column="39" selection-start-line="853" selection-start-column="39" selection-end-line="853" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/voicegame/GameRenderer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
@@ -3397,17 +3420,64 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.17711172">
           <caret line="43" column="35" selection-start-line="43" selection-start-column="35" selection-end-line="43" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/gameobjects/Wall.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7287234">
+          <caret line="177" column="1" selection-start-line="177" selection-start-column="1" selection-end-line="177" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/gameobjects/ScrollHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7060519">
+          <caret line="320" column="1" selection-start-line="320" selection-start-column="1" selection-end-line="320" selection-end-column="1" />
           <folding>
-            <element signature="e#792#793#0" expanded="true" />
-            <element signature="e#824#825#0" expanded="true" />
+            <element signature="e#1598#1599#0" expanded="true" />
+            <element signature="e#1641#1642#0" expanded="true" />
+            <element signature="e#2398#2399#0" expanded="true" />
+            <element signature="e#2431#2432#0" expanded="true" />
+            <element signature="e#2463#2464#0" expanded="true" />
+            <element signature="e#2494#2495#0" expanded="true" />
+            <element signature="e#2525#2526#0" expanded="true" />
+            <element signature="e#2555#2556#0" expanded="true" />
+            <element signature="e#3030#3031#0" expanded="true" />
+            <element signature="e#3082#3083#0" expanded="true" />
+            <element signature="e#3405#3406#0" expanded="true" />
+            <element signature="e#3433#3434#0" expanded="true" />
+            <element signature="e#10446#10447#0" expanded="true" />
+            <element signature="e#10494#10495#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/voicegame/GameRenderer.java">
+    <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/voicegame/GameWorld.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="217" column="16" selection-start-line="217" selection-start-column="16" selection-end-line="217" selection-end-column="16" />
+        <state vertical-scroll-proportion="40.270893">
+          <caret line="881" column="1" selection-start-line="881" selection-start-column="1" selection-end-line="881" selection-end-column="1" />
+          <folding>
+            <element signature="class#GameState#0;class#GameWorld#0" expanded="false" />
+            <element signature="e#20986#21374#0" expanded="true" />
+            <element signature="e#21373#21374#0" expanded="true" />
+            <element signature="e#21404#21792#0" expanded="true" />
+            <element signature="e#21791#21792#0" expanded="true" />
+            <element signature="e#21825#22214#0" expanded="true" />
+            <element signature="e#22213#22214#0" expanded="true" />
+            <element signature="e#22247#22636#0" expanded="true" />
+            <element signature="e#22635#22636#0" expanded="true" />
+            <element signature="e#22669#23029#0" expanded="true" />
+            <element signature="e#23028#23029#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/helpers/AssetManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-38.683">
+          <caret line="147" column="65" selection-start-line="147" selection-start-column="65" selection-end-line="147" selection-end-column="65" />
           <folding />
         </state>
       </provider>
@@ -3420,44 +3490,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/helpers/AssetManager.java">
+    <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/voicegame/GameRenderer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.862069">
-          <caret line="853" column="39" selection-start-line="853" selection-start-column="39" selection-end-line="853" selection-end-column="39" />
-          <folding>
-            <element signature="e#14348#14349#0" expanded="true" />
-            <element signature="e#14393#14394#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/com/ratowski/voicegame/GameWorld.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="13.407738">
-          <caret line="394" column="5" selection-start-line="394" selection-start-column="5" selection-end-line="394" selection-end-column="5" />
-          <folding>
-            <element signature="class#GameState#0;class#GameWorld#0" expanded="false" />
-            <element signature="e#6601#6602#0" expanded="true" />
-            <element signature="e#6629#6630#0" expanded="true" />
-            <element signature="e#7997#7998#0" expanded="true" />
-            <element signature="e#8049#8050#0" expanded="true" />
-            <element signature="e#8080#8081#0" expanded="true" />
-            <element signature="e#8130#8131#0" expanded="true" />
-            <element signature="e#8160#8161#0" expanded="true" />
-            <element signature="e#8209#8210#0" expanded="true" />
-            <element signature="e#8767#8768#0" expanded="true" />
-            <element signature="e#8833#8834#0" expanded="true" />
-            <element signature="e#8872#8873#0" expanded="true" />
-            <element signature="e#8932#8933#0" expanded="true" />
-            <element signature="e#8973#8974#0" expanded="true" />
-            <element signature="e#9034#9035#0" expanded="true" />
-            <element signature="e#9411#9412#0" expanded="true" />
-            <element signature="e#9473#9474#0" expanded="true" />
-            <element signature="e#9509#9510#0" expanded="true" />
-            <element signature="e#9566#9567#0" expanded="true" />
-            <element signature="e#9605#9606#0" expanded="true" />
-            <element signature="e#9665#9666#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.5976331">
+          <caret line="1029" column="17" selection-start-line="1029" selection-start-column="17" selection-end-line="1029" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>
